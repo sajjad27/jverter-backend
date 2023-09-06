@@ -24,15 +24,10 @@ public class ProgramController {
 	@Autowired
 	private ProgramService programService;
 
-	@PermitAll
-	@PreAuthorize("permitAll()")
 	@RequestMapping(value = "/public", method = RequestMethod.GET)
 	public ResponseEntity<?> getAll() throws Exception {
 		return ResponseEntity.status(HttpStatus.CREATED).body(programService.getAll());
-
-	}
-	
-	
+	}	
 	
 	@PermitAll
 	@PreAuthorize("permitAll()")

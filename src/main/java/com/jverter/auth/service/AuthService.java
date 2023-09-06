@@ -28,7 +28,7 @@ public class AuthService {
 	private JwtService jwtUtil;
 
 	@Autowired
-	private CustomUserDetailsService customUserDetailsService;
+	private UserService userService;
 	
 	@Autowired
 	private PasswordEncoder bcryptEncoder;
@@ -50,7 +50,7 @@ public class AuthService {
 	}
 
 	private AuthenticationResponse getAuthenticationResponse() {
-		User loadedUser = this.customUserDetailsService.getLoadedUser();
+		User loadedUser = this.userService.getLoadedUser();
 		JwtClaims claims = this.jwtUtil.mapToJwtClaims(loadedUser);
 		return getAuthenticationResponse(claims);
 	}

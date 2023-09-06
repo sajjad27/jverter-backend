@@ -2,6 +2,7 @@ package com.jverter.auth.model.dao;
 import javax.validation.constraints.NotEmpty;
 
 
+
 public class AuthenticationRequest {
 
 	@NotEmpty(message = "MISSING_USERNAME")

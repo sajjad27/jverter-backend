@@ -26,7 +26,7 @@ public class AuthController {
 
 	@Autowired
 	private AuthService authService;
-    Logger logger = LoggerFactory.getLogger(AuthController.class);
+	Logger logger = LoggerFactory.getLogger(AuthController.class);
 
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody AuthenticationRequest authenticationRequest)

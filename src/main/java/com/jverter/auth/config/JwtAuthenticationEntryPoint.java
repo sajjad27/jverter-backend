@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jverter.shared.exception.AppException;
 import com.jverter.shared.exception.model.errorresponse.ErrorResponse;
 import com.jverter.shared.helper.ErrorResponseMapper;
+import com.jverter.shared.interceptor.logger.AppLogger;
 
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, AccessDeniedHandler {
@@ -40,7 +41,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Ac
 			errorResponse = ErrorResponseMapper.map((AppException) exception);
 		} else {
 			// Unhandled exception
-			authException.printStackTrace();
+	        AppLogger.error("internal server error", authException);
 			response.setStatus(500);
 			errorResponse = ErrorResponseMapper.map(new AppException("INTERNAL_SERVER_ERROR"));
 		}

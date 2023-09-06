@@ -26,4 +26,8 @@ public class ProgramValidator {
 			throw new AppException("NO_PROGRAM_ID_FOUND", "header");
 		}
 	}
+	
+	public int hello() {
+		return 55;
+	}
 }

@@ -12,10 +12,10 @@ import org.springframework.stereotype.Service;
 
 import com.jverter.auth.model.entity.User;
 import com.jverter.auth.repository.UserRepository;
-import com.jverter.shared.logger.AppLogger;
+import com.jverter.shared.interceptor.logger.AppLogger;
 
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+public class UserService implements UserDetailsService {
 
 	@Autowired
 	private UserRepository userRepository;
@@ -28,16 +28,19 @@ public class CustomUserDetailsService implements UserDetailsService {
 //			2- preAuthenticationChecks.check(user); - DefaultPreAuthenticationChecks: check for locked
 //			3- additionalAuthenticationChecks - checks the password
 //			4- postAuthenticationChecks.check(user); - DefaultPostAuthenticationChecks check for not expired credentials
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String username)  {
 		AppLogger.info("user " + username + " attempt to login");
-		List<SimpleGrantedAuthority> roles = null;
+		this.setUserByUsername(username);
+		List<SimpleGrantedAuthority> roles = Arrays.asList(new SimpleGrantedAuthority(this.loadedUser.getRole().name()));
+		return new org.springframework.security.core.userdetails.User(this.loadedUser.getUsername(), this.loadedUser.getPassword(), true, true, this.loadedUser.getIsActivated() == 1, true, roles);
+	}
+	
+	private void setUserByUsername(String username) throws UsernameNotFoundException{
 		User user = userRepository.findByUsernameIgnoreCase(username);
 		if (user == null) {
 			throw new UsernameNotFoundException(null);			
 		}
 		this.loadedUser = user;
-		roles = Arrays.asList(new SimpleGrantedAuthority(user.getRole().name()));
-		return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), true, true, user.getIsActivated() == 1, true, roles);
 	}
 
 	public User getLoadedUser() {
@@ -47,7 +50,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public void setLoadedUser(User loadedUser) {
 		this.loadedUser = loadedUser;
 	}
-	
 	
 
 }

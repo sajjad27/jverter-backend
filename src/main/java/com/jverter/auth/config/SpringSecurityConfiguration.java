@@ -16,7 +16,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-import com.jverter.auth.service.CustomUserDetailsService;
+import com.jverter.auth.service.UserService;
 
 @Configuration
 @EnableWebSecurity
@@ -25,10 +25,10 @@ import com.jverter.auth.service.CustomUserDetailsService;
 public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
-	private CustomUserDetailsService userDetailsService;
+	private UserService userService;
 
 	@Autowired
-	private CustomJwtAuthenticationFilter customJwtAuthenticationFilter;
+	private AuthenticationFilter authenticationFilter;
 
 	@Autowired
 	private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -40,7 +40,7 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+		auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
 	}
 
 	@Bean
@@ -67,8 +67,7 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.authenticated().and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
 				.accessDeniedHandler(jwtAuthenticationEntryPoint).and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-				.addFilterBefore(customJwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
+				.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 
 }

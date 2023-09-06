@@ -23,7 +23,6 @@ public class DateHelper {
 		long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(duration);
 		double differenceInHours = diffInMinutes / 60d;
 		return differenceInHours;
-		
 	}
 
 	public static boolean ifWeekEnd(Date date) {
@@ -35,24 +34,12 @@ public class DateHelper {
 		return cal.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY;
 	}
 
-	public static boolean ifFutureDate(Calendar date) {
-		Calendar now = Calendar.getInstance();
-		if (date == null) {
-			throw new IllegalArgumentException("date must not be null");
-		}
-		if (date.get(Calendar.ERA) < now.get(Calendar.ERA)) {
-			return false;
-		}
-		if (date.get(Calendar.ERA) > now.get(Calendar.ERA)) {
-			return true;
-		}
-		if (date.get(Calendar.YEAR) < now.get(Calendar.YEAR)) {
-			return false;
-		}
-		if (date.get(Calendar.YEAR) > now.get(Calendar.YEAR)) {
-			return true;
-		}
-		return date.get(Calendar.DAY_OF_YEAR) > now.get(Calendar.DAY_OF_YEAR);
+	public static boolean isFutureDate(Calendar date) {
+	    if (date == null) {
+	        throw new IllegalArgumentException("date must not be null");
+	    }
+	    Calendar now = Calendar.getInstance();
+	    return date.compareTo(now) > 0;
 	}
 
 	public static String format(Calendar calendar) {
@@ -118,4 +105,11 @@ public class DateHelper {
 	public static java.sql.Date convertToSqlDate(Date date) {
 		return new java.sql.Date(date.getTime());
 	}
+	
+	public static String getCurrentTimestampIso() {
+        SimpleDateFormat isoFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        isoFormatter.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+
+        return isoFormatter.format(Date.from(Instant.now()));
+    }
 }

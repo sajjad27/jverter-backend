@@ -22,7 +22,7 @@ import com.jverter.auth.service.JwtService;
 import com.jverter.shared.exception.AppException;
 
 @Component
-public class CustomJwtAuthenticationFilter extends OncePerRequestFilter 
+public class AuthenticationFilter extends OncePerRequestFilter 
 {
 
 	@Autowired
@@ -35,7 +35,7 @@ public class CustomJwtAuthenticationFilter extends OncePerRequestFilter
 			boolean isRefreshTokenRequest = isRefreshTokenRequest(request);
 			String jwtToken = jwtService.extractJwtFromRequest(request);
 			JwtClaims jwtClaims = this.jwtService.validateToken(jwtToken, isRefreshTokenRequest);
-
+			
 			prepopulateUserData(request, jwtClaims);
 			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = getUsernamePasswordAuthenticationToken(
 					jwtClaims, isRefreshTokenRequest);

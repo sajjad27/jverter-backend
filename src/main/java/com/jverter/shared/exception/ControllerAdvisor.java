@@ -24,7 +24,7 @@ import com.jverter.shared.exception.model.errorresponse.ErrorResponse;
 import com.jverter.shared.exception.model.errorresponse.KeyValue;
 import com.jverter.shared.helper.ErrorResponseMapper;
 import com.jverter.shared.helper.RegexHelper;
-import com.jverter.shared.logger.AppLogger;
+import com.jverter.shared.interceptor.logger.AppLogger;
 import com.jverter.shared.service.StringHelper;
 
 @ControllerAdvice
@@ -56,6 +56,7 @@ public class ControllerAdvisor {
 		} else if (ex.getCause() instanceof InvalidFormatException) {
 			errorResponse = this.handleInvalidFormatException((InvalidFormatException) ex.getCause());
 		} else {
+			ex.printStackTrace();
 			errorResponse = ErrorResponseMapper.map("BODY_NOT_READABLE", null);
 		}
 		return errorResponse;
@@ -149,9 +150,7 @@ public class ControllerAdvisor {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ResponseBody
 	public ErrorResponse handleException(Exception ex) {
-		AppLogger.error("internal server error");
-		ex.printStackTrace();
+        AppLogger.error("internal server error", ex);
 		return ErrorResponseMapper.map("INTERNAL_SERVER_ERROR", null);
 	}
-
 }
