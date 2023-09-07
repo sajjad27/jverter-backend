@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Embeddable
 public class InputFieldValidatorId implements Serializable {
-    private InputField inputField;
+	private static final long serialVersionUID = 1L;
+	private InputField inputField;
     private String validatorType;
 }

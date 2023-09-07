@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class InputFieldId implements Serializable {
-    private Program program;
+	private static final long serialVersionUID = 1L;
+	private Program program;
     private String name;
 
 }

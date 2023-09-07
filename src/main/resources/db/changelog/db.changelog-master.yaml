@@ -15,4 +15,9 @@ databaseChangeLog:
           file: /db/changelog/changes/4_CREATE_INPUT_FIELD_VALIDATOR_TABLE.sql
     - include:
           file: /db/changelog/changes/5_CREATE_DUMMY_DATA.sql
+    - include:
+          file: /db/changelog/changes/6_CREATE_AUDIT_LOG_TABLE.sql
+          
+          
+          
           

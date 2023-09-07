@@ -112,4 +112,8 @@ public class DateHelper {
 
         return isoFormatter.format(Date.from(Instant.now()));
     }
+
+	public static Date getCurrentTimestamp() {
+		return new Date();
+	}
 }

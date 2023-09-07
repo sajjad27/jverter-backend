@@ -17,8 +17,12 @@ import com.jverter.shared.interceptor.logger.AppLogger;
 @Service
 public class UserService implements UserDetailsService {
 
+	private final UserRepository userRepository;
+	
 	@Autowired
-	private UserRepository userRepository;
+	private UserService(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
 	
 	private User loadedUser;
 
