@@ -26,7 +26,7 @@ public class StringHelper {
 	}
 
 	public static String getRoleNamesSeperatedByComma() {
-		String[] rols = EnumSet.allOf(AppRole.class).stream().map(e -> e.getRole()).toArray(String[]::new);//.collect(Collectors.toList());
+		String[] rols = EnumSet.allOf(AppRole.class).stream().map(e -> e.name()).toArray(String[]::new);//.collect(Collectors.toList());
 		return getStringsSeperatedByComma(rols);
 	}
 

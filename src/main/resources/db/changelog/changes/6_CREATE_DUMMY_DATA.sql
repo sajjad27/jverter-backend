@@ -3,12 +3,7 @@
 --changeset sajad:1 failOnError:false runInTransaction:true
 
 --comment:  create initial dummy data
-insert 
-    into
-        user
-        (username, password, role, email, is_activated) 
-    values
-        ('sajad', '$2a$10$nxoL6.9n4qNRjZjv7e3CG.YkwWPh.WghqxHIOqWlZL1wASsl9o5aq', 'ROLE_PROGRAMMER', 'sajad-2020@hotmail.com', 1);
+
 		
 insert 
     into

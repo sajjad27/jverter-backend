@@ -1,7 +1,8 @@
 package com.jverter.auth.config;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -57,9 +59,12 @@ public class AuthenticationFilter extends OncePerRequestFilter
 	}
 
 	private UserDetails getUserDetails(JwtClaims jwtClaims) {
-		UserDetails userDetails = new User(String.valueOf(jwtClaims.getUsername()), "",
-				Arrays.asList(new SimpleGrantedAuthority(jwtClaims.getRole().name())));
-		return userDetails;
+	    Collection<? extends GrantedAuthority> authorities = jwtClaims.getRoles()
+	            .stream()
+	            .map(role -> new SimpleGrantedAuthority(role.name()))
+	            .collect(Collectors.toList());
+
+	    return new User(jwtClaims.getUsername(), "", authorities);
 	}
 
 	private boolean isRefreshTokenRequest(HttpServletRequest request) {

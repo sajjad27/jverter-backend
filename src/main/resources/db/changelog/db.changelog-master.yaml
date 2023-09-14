@@ -1,22 +1,21 @@
-#databaseChangeLog:
-#    - includeAll:
-#          path: /db/changelog/changes/
-# removed to have the full control or the execution order
+
 databaseChangeLog:
     - include:
           file: /db/changelog/changes/0_DATABASE-CONFIGURATION.sql
     - include:
           file: /db/changelog/changes/1_CREATE_USER_TABLE.sql
     - include:
-          file: /db/changelog/changes/2_CREATE_PROGRAM_TABLE.sql
+          file: /db/changelog/changes/2_CREATE_USER_ROLE_TABLE.sql
     - include:
-          file: /db/changelog/changes/3_CREATE_INPUT_FIELD_TABLE.sql
+          file: /db/changelog/changes/3_CREATE_PROGRAM_TABLE.sql
     - include:
-          file: /db/changelog/changes/4_CREATE_INPUT_FIELD_VALIDATOR_TABLE.sql
+          file: /db/changelog/changes/4_CREATE_INPUT_FIELD_TABLE.sql
     - include:
-          file: /db/changelog/changes/5_CREATE_DUMMY_DATA.sql
+          file: /db/changelog/changes/5_CREATE_INPUT_FIELD_VALIDATOR_TABLE.sql
     - include:
-          file: /db/changelog/changes/6_CREATE_AUDIT_LOG_TABLE.sql
+          file: /db/changelog/changes/6_CREATE_DUMMY_DATA.sql
+    - include:
+          file: /db/changelog/changes/7_CREATE_AUDIT_LOG_TABLE.sql
           
           
           

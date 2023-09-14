@@ -1,8 +1,11 @@
 package com.jverter.auth.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,6 +31,12 @@ import io.jsonwebtoken.UnsupportedJwtException;
 @Service
 public class JwtService {
 
+	// jwt token fields
+	private final static String ROLES = "roles";
+	private final static String USERNAME = "username";
+	private final static String IS_REFERESH_TOKEN = "isRefreshToken";
+	
+	
 	private String secret;
 	private int jwtExpirationInMs;
 	private int refreshExpirationDateInMs;
@@ -49,10 +58,18 @@ public class JwtService {
 
 	public String generateAccessToken(JwtClaims jwtClaims) {
 		Map<String, Object> claims = new HashMap<>();
-		claims.put("isRefreshToken", false);
-		claims.put(jwtClaims.getRole().getJwtTokenValue(), true);
-		claims.put("username", jwtClaims.getUsername());
+		claims.put(ROLES, getRoleClaims(jwtClaims.getRoles()));
+		claims.put(USERNAME, jwtClaims.getUsername());
+		claims.put(IS_REFERESH_TOKEN, false);
 		return doGenerateToken(claims, String.valueOf(jwtClaims.getUserId()), this.jwtExpirationInMs);
+	}
+
+	private String[] getRoleClaims(List<AppRole> roles) {
+		String[] roleArray = new String[roles.size()];
+		for (int i = 0; i < roles.size(); i++) {
+			roleArray[i] = roles.get(i).name();
+		}
+		return roleArray;
 	}
 
 	public String generateRefreshToken(Long userId) {
@@ -67,7 +84,7 @@ public class JwtService {
 				.signWith(SignatureAlgorithm.HS512, secret).compact();
 	}
 
-	public JwtClaims validateToken(String authToken, boolean isRefreshTokenRequest) throws AppException{
+	public JwtClaims validateToken(String authToken, boolean isRefreshTokenRequest) throws AppException {
 		try {
 			JwtClaims jwtClaims = this.mapToJwtClaims(authToken);
 			validateTokenCompatibility(authToken, isRefreshTokenRequest);
@@ -86,28 +103,28 @@ public class JwtService {
 		Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 		return map(claims);
 	}
-	
+
 	public Claims getClaimsFromToken(String token) {
 		// this method will validate the token then will return the Claims
 		return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 	}
-	
+
 	public JwtClaims map(Claims claims) {
 		Long userId = Long.parseLong(claims.getSubject());
 		String username = claims.get("username", String.class);
-		AppRole appRole = getRolesFromToken(claims);
-		return new JwtClaims(userId, username, appRole);
+		List<AppRole> appRoles = getRolesFromToken(claims);
+		return new JwtClaims(userId, username, appRoles);
 	}
 
 	public JwtClaims mapToJwtClaims(User user) {
 		JwtClaims jwtClaims = new JwtClaims();
 		jwtClaims.setUserId(user.getId());
-		jwtClaims.setRole(user.getRole());
 		jwtClaims.setUsername(user.getUsername());
+		jwtClaims.setRoles(
+				user.getUserRoles().stream().map(userRole -> userRole.getRole()).collect(Collectors.toList()));
 		return jwtClaims;
 	}
 
-	// TODO: this should be a unauthorized code
 	private boolean validateTokenCompatibility(String jwtToken, boolean isRefreshTokenRequest) throws AppException {
 		if (!isRefreshTokenRequest && this.isRefreshToken(jwtToken)) {
 			throw new AppException("REFRESH_TOKEN_INCOMPATIBILITY", "refreshToken");
@@ -125,14 +142,27 @@ public class JwtService {
 		return null;
 	}
 
-	private AppRole getRolesFromToken(Claims claims) {
-		for (AppRole role : AppRole.values()) {
-			Boolean isRoleFound = claims.get(role.getJwtTokenValue(), Boolean.class);
-			if (isRoleFound != null && isRoleFound) {
-				return role;
+	private List<AppRole> getRolesFromToken(Claims claims) {
+//		List<AppRole> userRoles = new ArrayList<>();
+//		for (AppRole userRole : AppRole.values()) {
+//			Boolean isRoleFound = claims.get(userRole.name(), Boolean.class);
+//			if (isRoleFound != null && isRoleFound) {
+//				userRoles.add(userRole);
+//			}
+//		}
+//		return userRoles;
+
+		List<AppRole> userRoles = new ArrayList<>();
+		List<String> rolesClaim = claims.get(ROLES, List.class);
+
+		if (rolesClaim != null) {
+			for (String roleStr : rolesClaim) {
+				// Map the role string to the corresponding AppRole enum value
+				AppRole appRole = AppRole.valueOf(roleStr);
+				userRoles.add(appRole);
 			}
 		}
-		return null;
+		return userRoles;
 	}
 
 	public boolean isRefreshToken(String token) {
@@ -144,7 +174,7 @@ public class JwtService {
 		Object isRefreshToken = claims.get("isRefreshToken");
 		return isRefreshToken != null && (boolean) isRefreshToken;
 	}
-	
+
 	public JwtClaims getCurrentJwtClaims() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return (JwtClaims) authentication.getPrincipal();
