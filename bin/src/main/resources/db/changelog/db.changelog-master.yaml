@@ -1,0 +1,46 @@
+#databaseChangeLog:
+#    - includeAll:
+#          path: /db/changelog/changes/
+# removed to have the full control or the execution order
+databaseChangeLog:
+    - include:
+          file: /db/changelog/changes/0_DATABASE-CONFIGURATION.sql
+    - include:
+          file: /db/changelog/changes/1_CREATE_PROJECT_TABLE.sql
+    - include:
+          file: /db/changelog/changes/2_CREATE_USER_TABLE.sql
+    - include:
+          file: /db/changelog/changes/3_CREATE_WORK_DAY_TABLE.sql
+    - include:
+          file: /db/changelog/changes/4_CREATE_WORK_TIME_TABLE.sql
+    - include:
+          file: /db/changelog/changes/5_CREATE_VACATION_TABLE.sql
+    - include:
+          file: /db/changelog/changes/6_ALTER_WORK_TIME_ADD_COLUMN.sql
+    - include:
+          file: /db/changelog/changes/7_CREATE_CREDIT_TABLE.sql
+    - include:
+          file: /db/changelog/changes/8_ALTER_WORK_TIME_ADD_COLUMN.sql
+    - include:
+          file: /db/changelog/changes/9_CREATE_MONTHLY_SALARY_TABLE.sql
+    - include:
+          file: /db/changelog/changes/10_CREATE_DAILY_SALARY_TABLE.sql
+    - include:
+          file: /db/changelog/changes/11_ALTER_DAILY_SALARY_TABLE_ADD_COLUMN.sql
+    - include:
+          file: /db/changelog/changes/12_CREATE_ASSET_TABLE.sql
+    - include:
+          file: /db/changelog/changes/13_CREATE_ASSET_WORKER_ASSIGNMENT_TABLE.sql
+    - include:
+          file: /db/changelog/changes/14_ALTER_CREDIT_TABLE_CHANGE_CONSTRAINT.sql
+    - include:
+          file: /db/changelog/changes/15_ALTER_USER_TABLE_ADD_COLUMN.sql
+    - include:
+          file: /db/changelog/changes/16_ALTER_USER_TABLE_ADD_COLUMN.sql
+    - include:
+          file: /db/changelog/changes/17_CREATE_BONUS_TABLE.sql
+    - include:
+          file: /db/changelog/changes/18_ALTER_DAILY_SALARY_TABLE_ADD_COLUMN.sql
+    - include:
+          file: /db/changelog/changes/19_ALTER_DAILY_SALARY_TABLE_ADD_OTHER_DEDUCTION_COLUMN.sql
+          
