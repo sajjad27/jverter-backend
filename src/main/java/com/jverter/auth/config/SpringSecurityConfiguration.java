@@ -23,7 +23,6 @@ import com.jverter.auth.service.UserService;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-//@EnableAutoConfiguration(exclude = { WebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class })
 public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
@@ -70,7 +69,7 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()).and().csrf()
-				.disable().authorizeRequests().antMatchers("/auth/authenticate", "/**/public/**").permitAll().anyRequest()
+				.disable().authorizeRequests().antMatchers("/auth/authenticate", "/**/public/**", "/**/actuator/**").permitAll().anyRequest()
 				.authenticated().and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
 				.accessDeniedHandler(jwtAuthenticationEntryPoint).and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()

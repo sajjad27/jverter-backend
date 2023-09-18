@@ -36,5 +36,12 @@ public class ProgramController {
 			HttpServletRequest request) throws Exception {
 		return ResponseEntity.status(HttpStatus.CREATED).body(programService.getProgram(programId));
 	}
+	
+	@PreAuthorize("hasAnyRole('ADMIN')")
+	@RequestMapping(value = "/{programId}", method = RequestMethod.GET)
+	public ResponseEntity<?> getOneProgram(@PathVariable("programId") String programId,
+			HttpServletRequest request) throws Exception {
+		return ResponseEntity.status(HttpStatus.CREATED).body(programService.getProgram(programId));
+	}
 
 }
