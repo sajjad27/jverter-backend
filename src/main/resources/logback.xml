@@ -1,4 +1,4 @@
-<!-- <configuration>
+<configuration>
 	<include
 		resource="org/springframework/boot/logging/logback/base.xml" />
 
@@ -8,7 +8,7 @@
 		<file>logs/application.log</file>
 		<rollingPolicy
 			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>logs/application/%d{dd-MM-yyyy}.log
+			<fileNamePattern>logs/application/%d{yyyy-MM-dd}.log
 			</fileNamePattern>
 			<maxHistory>30</maxHistory> Keep logs for 30 days
 		</rollingPolicy>
@@ -24,7 +24,7 @@
 		<file>logs/json.log</file>
 		<rollingPolicy
 			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>logs/json/%d{dd-MM-yyyy}.json</fileNamePattern>
+			<fileNamePattern>logs/json/%d{yyyy-MM-dd}.log</fileNamePattern>
 			<maxHistory>30</maxHistory> Keep logs for 30 days
 		</rollingPolicy>
 		<encoder>
@@ -41,46 +41,4 @@
 	<logger name="JSON" level="INFO" additivity="false">
 		<appender-ref ref="DAILY_JSON_FILE" />
 	</logger>
-</configuration> -->
-
-
-
-<configuration>
-    <include resource="org/springframework/boot/logging/logback/base.xml" />
-
-    <!-- Define a variable to store the date format -->
-    <property resource="application.properties" />
-
-    <!-- this is related to application log -->
-    <appender name="DAILY_ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/application.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/application/%d{${date.format}}.log</fileNamePattern>
-            <maxHistory>30</maxHistory> <!-- Keep logs for 30 days -->
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-5level [%thread] %logger{36} %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <!-- this is related to json log -->
-    <appender name="DAILY_JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/json.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/json/%d{${date.format}}.json</fileNamePattern>
-            <maxHistory>30</maxHistory> <!-- Keep logs for 30 days -->
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <root level="INFO">
-        <appender-ref ref="CONSOLE" />
-        <appender-ref ref="DAILY_ROLLING_FILE" />
-    </root>
-
-    <logger name="JSON" level="INFO" additivity="false">
-        <appender-ref ref="DAILY_JSON_FILE" />
-    </logger>
 </configuration>
