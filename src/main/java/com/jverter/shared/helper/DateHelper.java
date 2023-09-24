@@ -8,9 +8,21 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.beans.factory.annotation.Value;
+
+import com.jverter.shared.service.ApplicationPropertiesUtil;
+
 public class DateHelper {
 
-	private final static SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+	private final static SimpleDateFormat formatter = new SimpleDateFormat(ApplicationPropertiesUtil.getProperty("date.format"));
+	
+	@Value("${date.format}")
+	private String dateFormat;
+	
+	public String getDateFormat() {
+        return dateFormat;
+    }
+
 
 	public static String convertDateToShortTime(Date date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");

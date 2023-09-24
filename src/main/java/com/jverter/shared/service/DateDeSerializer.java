@@ -7,6 +7,8 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -14,10 +16,20 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.jverter.shared.exception.AppException;
 import com.jverter.shared.exception.model.errorresponse.KeyValue;
 
+import lombok.Getter;
+
+@Getter
 public class DateDeSerializer extends StdDeserializer<Instant> {
 
 	private static final long serialVersionUID = 3529849946300947579L;
-	private static final String FORMAT = "dd-MM-yyyy";
+//	private static final String FORMAT = "dd-MM-yyyy";
+	
+	@Value("${date.format}")
+	private String dateFormat;
+	
+//	public String getDateFormat() {
+//        return dateFormat;
+//    }
 
 	public DateDeSerializer() {
 		super(Instant.class);
@@ -38,7 +50,7 @@ public class DateDeSerializer extends StdDeserializer<Instant> {
 		try {
 			return deserialize(date);
 		} catch (ParseException e) {
-			throw new AppException("DATE_FORMAT_INCORRECT", new KeyValue("{VALID_DATE_FORMAT}", FORMAT), field);
+			throw new AppException("DATE_FORMAT_INCORRECT", new KeyValue("{VALID_DATE_FORMAT}", dateFormat), field);
 		} catch (Exception e) {
 			throw new AppException("ERROR_WHILE_PARSING", field);
 		}
@@ -51,7 +63,7 @@ public class DateDeSerializer extends StdDeserializer<Instant> {
 			return null;
 		}
 
-		SimpleDateFormat sdf = new SimpleDateFormat(FORMAT);
+		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
 		// Lenient is to change the default behavior which is to accept anything and
 		// restrict it to accept exactly as the format
 		sdf.setLenient(false);
