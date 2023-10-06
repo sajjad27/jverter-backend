@@ -61,7 +61,7 @@ public class AuthenticationFilter extends OncePerRequestFilter
 	private UserDetails getUserDetails(JwtClaims jwtClaims) {
 	    Collection<? extends GrantedAuthority> authorities = jwtClaims.getRoles()
 	            .stream()
-	            .map(role -> new SimpleGrantedAuthority(role.name()))
+	            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
 	            .collect(Collectors.toList());
 
 	    return new User(jwtClaims.getUsername(), "", authorities);

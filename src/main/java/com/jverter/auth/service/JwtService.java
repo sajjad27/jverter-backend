@@ -35,8 +35,7 @@ public class JwtService {
 	private final static String ROLES = "roles";
 	private final static String USERNAME = "username";
 	private final static String IS_REFERESH_TOKEN = "isRefreshToken";
-	
-	
+
 	private String secret;
 	private int jwtExpirationInMs;
 	private int refreshExpirationDateInMs;
@@ -139,19 +138,27 @@ public class JwtService {
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
 			return bearerToken.substring(7, bearerToken.length());
 		}
+		return getHeaderToken(request);
+	}
+
+	private String getHeaderToken(HttpServletRequest request) {
+		String requestURI = request.getRequestURI();
+		if (requestURI != null && requestURI.contains("togglz-console")) {
+			return getQueryParam(request, "token");
+		}
 		return null;
 	}
 
-	private List<AppRole> getRolesFromToken(Claims claims) {
-//		List<AppRole> userRoles = new ArrayList<>();
-//		for (AppRole userRole : AppRole.values()) {
-//			Boolean isRoleFound = claims.get(userRole.name(), Boolean.class);
-//			if (isRoleFound != null && isRoleFound) {
-//				userRoles.add(userRole);
-//			}
-//		}
-//		return userRoles;
+	private String getQueryParam(HttpServletRequest request, String paramKey) {
+		String value = request.getParameter(paramKey);
+		if (value != null && !value.isEmpty()) {
+			return value;
+		} else {
+			return null;
+		}
+	}
 
+	private List<AppRole> getRolesFromToken(Claims claims) {
 		List<AppRole> userRoles = new ArrayList<>();
 		List<String> rolesClaim = claims.get(ROLES, List.class);
 

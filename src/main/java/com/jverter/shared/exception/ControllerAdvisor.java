@@ -9,6 +9,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -56,40 +57,46 @@ public class ControllerAdvisor {
 		} else if (ex.getCause() instanceof InvalidFormatException) {
 			errorResponse = this.handleInvalidFormatException((InvalidFormatException) ex.getCause());
 		} else {
-			ex.printStackTrace();
 			errorResponse = ErrorResponseMapper.map("BODY_NOT_READABLE", null);
 		}
 		return errorResponse;
+	}
+
+	@ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseBody
+	public ErrorResponse handleEmptyBody(HttpMediaTypeNotSupportedException ex) {
+		return ErrorResponseMapper.map("MISSING_BODY");
 	}
 
 	@ExceptionHandler(InvalidFormatException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ResponseBody
 	public ErrorResponse handleInvalidFormatException(InvalidFormatException ex) {
-		
+
 		String fieldName = "";
-		for(Reference reference: ex.getPath()) {
-			if(reference.getFieldName() != null) {
+		for (Reference reference : ex.getPath()) {
+			if (reference.getFieldName() != null) {
 				fieldName += "." + reference.getFieldName();
-			} else if(reference.getIndex() >= 0) {
+			} else if (reference.getIndex() >= 0) {
 				fieldName += "[" + reference.getIndex() + "]";
 			}
 		}
-		ErrorResponse errorResponse = ErrorResponseMapper.mapWithSingleKeyValue("INVALID_FORMAT", new KeyValue("{VALID_DATA_TYPE}", ex.getTargetType().getName()) , fieldName.substring(1));
+		ErrorResponse errorResponse = ErrorResponseMapper.map("BAD_CREDENTIALS");
 		return errorResponse;
 	}
-	
+
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ResponseBody
-	public ErrorResponse handleNumberFormatException(MethodArgumentTypeMismatchException ex) {		
+	public ErrorResponse handleNumberFormatException(MethodArgumentTypeMismatchException ex) {
 		List<String> expectedAndFoundTypes = RegexHelper.getTextBetweenByChar(ex.getMessage(), '\'');
-		
+
 		List<KeyValue> keyValues = new ArrayList<KeyValue>();
 		keyValues.add(new KeyValue("{{PARAMETER_NAME}}", ex.getName()));
 		keyValues.add(new KeyValue("{{FOUND_TYPE}}", expectedAndFoundTypes.get(0)));
 		keyValues.add(new KeyValue("{{EXPECTED_TYPE}}", expectedAndFoundTypes.get(1)));
-		ErrorResponse errorResponse = ErrorResponseMapper.map("NUMBER_FORMAT_MISMATCH", keyValues , "header");
+		ErrorResponse errorResponse = ErrorResponseMapper.map("NUMBER_FORMAT_MISMATCH", keyValues, "header");
 		return errorResponse;
 	}
 
@@ -138,7 +145,7 @@ public class ControllerAdvisor {
 				new KeyValue("{PARAMETER_NAME}", fe.getParameterName()), "header");
 
 	}
-	
+
 	@ExceptionHandler(AccessDeniedException.class)
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	@ResponseBody
@@ -150,7 +157,7 @@ public class ControllerAdvisor {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ResponseBody
 	public ErrorResponse handleException(Exception ex) {
-        AppLogger.error("internal server error", ex);
+		AppLogger.error("internal server error", ex);
 		return ErrorResponseMapper.map("INTERNAL_SERVER_ERROR", null);
 	}
 }

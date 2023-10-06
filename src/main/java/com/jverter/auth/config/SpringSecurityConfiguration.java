@@ -3,7 +3,7 @@ package com.jverter.auth.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.vote.RoleVoter;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -18,6 +18,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
+import com.jverter.auth.model.AppRole;
 import com.jverter.auth.service.UserService;
 
 @Configuration
@@ -54,7 +55,7 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public AuthenticationEntryPoint authenticationEntryPoint() {
 		return new JwtAuthenticationEntryPoint();
 	}
-	
+
 	@Bean
 	GrantedAuthorityDefaults grantedAuthorityDefaults() {
 		return new GrantedAuthorityDefaults(""); // Remove the ROLE_ prefix
@@ -68,12 +69,23 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	// authorization
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()).and().csrf()
-				.disable().authorizeRequests().antMatchers("/auth/authenticate", "/**/public/**", "/**/actuator/**").permitAll().anyRequest()
-				.authenticated().and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
-				.accessDeniedHandler(jwtAuthenticationEntryPoint).and().sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-				.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
+		http
+        .cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()).and()
+        .csrf().disable()
+        .authorizeRequests()
+            .antMatchers("/auth/authenticate", "/**/public/**").permitAll()
+            .antMatchers(HttpMethod.GET, "/actuator/togglz/**").permitAll() 
+            .antMatchers("/actuator/**").hasRole(AppRole.ADMIN.name()) 
+            .anyRequest().authenticated()
+            .and()
+        .exceptionHandling()
+            .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+            .accessDeniedHandler(jwtAuthenticationEntryPoint)
+            .and()
+        .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+        .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 
 }
